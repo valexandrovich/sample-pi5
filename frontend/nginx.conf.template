@@ -2,15 +2,15 @@ server {
     listen 80;
     server_name localhost;
 
-    # Frontend static files under /app1
-    location /app1/ {
-        alias /usr/share/nginx/html/app1/;
-        try_files $uri $uri/ /app1/index.html;
+    # Frontend static files under /${APP_PATH}
+    location /${APP_PATH}/ {
+        alias /usr/share/nginx/html/${APP_PATH}/;
+        try_files $uri $uri/ /${APP_PATH}/index.html;
     }
 
     # Proxy API requests to backend
-    location /app1/api/ {
-        rewrite ^/app1/api/(.*) /$1 break;
+    location /${APP_PATH}/api/ {
+        rewrite ^/${APP_PATH}/api/(.*) /$1 break;
         proxy_pass http://backend:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -22,9 +22,9 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
-    # Redirect root to /app1
+    # Redirect root to /${APP_PATH}
     location = / {
-        return 301 /app1/;
+        return 301 /${APP_PATH}/;
     }
 }
 

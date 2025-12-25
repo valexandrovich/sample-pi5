@@ -8,24 +8,27 @@ RUN npm ci
 
 COPY . .
 
-ARG VITE_BASE_PATH=/app1/
-ARG VITE_API_URL=/app1/api
+ARG APP_PATH=sample
 
-ENV VITE_BASE_PATH=$VITE_BASE_PATH
-ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_BASE_PATH=/${APP_PATH}/
+ENV VITE_API_URL=/${APP_PATH}/api
 
 RUN npm run build
 
 # Production stage
 FROM nginx:alpine
 
-# Copy built files
-COPY --from=builder /app/dist /usr/share/nginx/html/app1
+ARG APP_PATH=sample
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy built files to path based on APP_PATH
+COPY --from=builder /app/dist /usr/share/nginx/html/${APP_PATH}
+
+# Copy nginx template and entrypoint
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 80
 
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
-
