@@ -11,10 +11,10 @@ services:
     build:
       context: ./frontend
       args:
-        - VITE_BASE_PATH=/app1/
-        - VITE_API_URL=/app1/api
+        - VITE_BASE_PATH=/sample/
+        - VITE_API_URL=/sample/api
     ports:
-      - "${APP_PORT:-8080}:80"
+      - "${APP_PORT:-3115}:80"
     depends_on:
       - backend
     restart: unless-stopped
